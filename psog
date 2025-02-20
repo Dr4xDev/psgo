@@ -8,6 +8,7 @@ local function fetchPetsDatabase()
     end)
 
     if success then
+        print("Pets Database Data: ", response)  -- Print the entire pets data
         return response -- Return decoded pets data
     else
         warn("⚠️ Failed to fetch pets data!")
@@ -23,6 +24,7 @@ local function fetchRAPData()
     end)
 
     if success then
+        print("RAP Data: ", response)  -- Print the entire RAP data
         return response -- Return decoded RAP data
     else
         warn("⚠️ Failed to fetch RAP data!")
