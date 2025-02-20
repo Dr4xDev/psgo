@@ -48,40 +48,12 @@ local function getAdjustedCost(petName, originalCost, rapData)
     return originalCost -- Return the original cost if it's not a percentage
 end
 
--- Fetch pets database from API
-local function fetchPetsDatabase()
-    local success, response = pcall(function()
-        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/Pets")
-        return HttpService:JSONDecode(apiResponse)
-    end)
-
-    if success and response and response.data then
-        local PETS_DATABASE = {}
-        local REVERSE_LOOKUP = {}
-
-        for _, item in pairs(response.data) do
-            if item.configData and typeof(item.configData) == "table" then
-                local assetUrl = item.configData.thumbnail
-                local itemName = item.configData.name
-
-                if assetUrl and itemName then
-                    PETS_DATABASE[assetUrl] = itemName
-                    REVERSE_LOOKUP[itemName] = assetUrl
-                end
-            end
-        end
-        return PETS_DATABASE, REVERSE_LOOKUP
-    else
-        warn("[❌ ERROR] Failed to fetch pets database!")
-        return {}, {}
-    end
-end
-
 -- Main function to print adjusted costs
 local function printAdjustedCosts()
     local rapData = fetchRAPData()
     if rapData then
         for petName, petInfo in pairs(CONFIG.TARGET_ITEMS) do
+            -- Access the cost correctly from the petInfo table
             local adjustedCost = getAdjustedCost(petName, petInfo.cost, rapData)
             if adjustedCost then
                 print("Adjusted cost for " .. petName .. ": " .. adjustedCost)
