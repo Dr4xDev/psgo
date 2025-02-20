@@ -9,7 +9,7 @@ local function fetchPetsDatabase()
 
     if success then
         print("Pets Database Data: ", response)  -- Print the entire pets data
-        print response -- Return decoded pets data
+        return response -- Return decoded pets data
     else
         warn("⚠️ Failed to fetch pets data!")
         return nil
@@ -36,7 +36,8 @@ end
 local function getRAPValue(petName, rapData)
     for _, pet in ipairs(rapData) do
         if pet.configData.id == petName then
-            local rapValue = pet.configData.value -- Return RAP value if found
+            local rapValue = pet.value  -- Define rapValue here
+            return rapValue  -- Return the rapValue
         end
     end
     return nil -- Return nil if pet not found
