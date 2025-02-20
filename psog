@@ -7,45 +7,25 @@ local function fetchRAPData()
         return HttpService:JSONDecode(apiResponse)
     end)
 
+    -- Debugging: Print the full response from the RAP API
     if success then
-        print("RAP Data: ", response)  -- Print the entire RAP data to inspect the structure
-        return response -- Return decoded RAP data
+        print("RAP API Response (full): ", HttpService:JSONEncode(response))  -- Print the full RAP API response as JSON for debugging
     else
         warn("⚠️ Failed to fetch RAP data!")
         return nil
     end
+
+    return response  -- Return the full response for further processing
 end
 
 -- Function to get RAP value for a specific pet
 local function getRAPValue(petName, rapData)
-    -- Debug print to inspect the structure of rapData
-    print("Inspecting RAP Data structure:")
     for _, pet in ipairs(rapData) do
-        print("Pet name: " .. pet.configData.id .. ", RAP value: " .. pet.configData.value) -- Correct field
-        -- Check if the pet's name matches
-        if pet.configData.id == petName then
-            return pet.configData.value  -- Return the RAP value if pet matches
+        if pet.configData and pet.configData.id == petName then
+            return pet.value -- Return RAP value if found
         end
     end
     return nil -- Return nil if pet not found
-end
-
--- Adjust Cost Based on RAP
-local function getAdjustedCost(petName, originalCost, rapData)
-    if type(originalCost) == "string" and originalCost:match("%%$") then
-        local percentage = tonumber(originalCost:match("(%d+)")) / 100
-        local rapValue = getRAPValue(petName, rapData)
-        
-        if rapValue then
-            print("RAP Value for " .. petName .. ": " .. rapValue) -- Print the RAP value
-            return math.floor(rapValue * percentage) -- Apply percentage to RAP
-        else
-            warn("⚠️ Missing RAP data for:", petName)
-            return nil
-        end
-    end
-
-    return originalCost -- Return original cost if it's not a percentage
 end
 
 -- Example of how to call the functions
@@ -53,6 +33,10 @@ local petName = "Huge Piggy"
 local rapData = fetchRAPData() -- Fetch RAP data
 
 if rapData then
+    -- Print the full RAP data for debugging
+    print("Full RAP Data: ", HttpService:JSONEncode(rapData))
+
+    -- Try to get the RAP value
     local rapValue = getRAPValue(petName, rapData)
     if rapValue then
         print("RAP Value for " .. petName .. ": " .. rapValue)
