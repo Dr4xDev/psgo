@@ -1,66 +1,72 @@
-local CONFIG = {
-    TARGET_ITEMS = {
-        ["Huge Piggy"] = { cost = "100%", resell = "100%" },
-        -- Add more items here if needed
-    }
-}
+local HttpService = game:GetService("HttpService")
 
--- Fetch RAP data
-local function fetchRAPData()
+local PETS_DATABASE, REVERSE_LOOKUP = {}, {}
+local MISC_DATABASE, MISC_LOOKUP = {}
+
+-- Function to fetch the pets database
+local function fetchPetsDatabase()
     local success, response = pcall(function()
-        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/rap")
+        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/Pets")
         return HttpService:JSONDecode(apiResponse)
     end)
 
     if success and response and response.data then
-        return response
-    else
-        warn("⚠️ Failed to fetch RAP data!")
-        return nil
-    end
-end
-
--- Function to get RAP value for a specific pet
-local function getRAPValue(petName, rapData)
-    for _, pet in ipairs(rapData.data) do
-        if pet.configData.id == petName then
-            return pet.value  -- Return RAP value if found
-        end
-    end
-    return nil  -- Return nil if pet not found
-end
-
--- Function to calculate the adjusted cost based on the RAP value and percentage
-local function getAdjustedCost(petName, originalCost, rapData)
-    if type(originalCost) == "string" and originalCost:match("%%$") then
-        local percentage = tonumber(originalCost:match("(%d+)")) / 100
-        local rapValue = getRAPValue(petName, rapData)
-        
-        if rapValue then
-            print("RAP Value for " .. petName .. ": " .. rapValue) -- Print the RAP value
-            return math.floor(rapValue * percentage)  -- Apply the percentage to the RAP value
-        else
-            warn("⚠️ Missing RAP data for:", petName)
-            return nil
-        end
-    end
-
-    return originalCost -- Return the original cost if it's not a percentage
-end
-
--- Main function to print adjusted costs
-local function printAdjustedCosts()
-    local rapData = fetchRAPData()
-    if rapData then
-        for petName, petInfo in pairs(CONFIG.TARGET_ITEMS) do
-            -- Access the cost correctly from the petInfo table
-            local adjustedCost = getAdjustedCost(petName, petInfo.cost, rapData)
-            if adjustedCost then
-                print("Adjusted cost for " .. petName .. ": " .. adjustedCost)
+        for _, item in pairs(response.data) do
+            if item.configData and typeof(item.configData) == "table" then
+                local assetUrl = item.configData.thumbnail
+                local itemName = item.configData.name
+                if assetUrl and itemName then
+                    PETS_DATABASE[itemName] = assetUrl
+                    REVERSE_LOOKUP[assetUrl] = itemName
+                end
             end
         end
+    else
+        warn("❌ Failed to fetch Pets Database.")
     end
 end
 
--- Call the main function to print adjusted costs
-printAdjustedCosts()
+-- Function to fetch the misc items database
+local function fetchMiscDatabase()
+    local success, response = pcall(function()
+        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/MiscItems")
+        return HttpService:JSONDecode(apiResponse)
+    end)
+
+    if success and response and response.data then
+        for _, item in pairs(response.data) do
+            if item.configData and typeof(item.configData) == "table" then
+                local assetUrl = item.configData.icon
+                local itemName = item.configData.configName
+                if assetUrl and itemName then
+                    MISC_DATABASE[itemName] = assetUrl
+                    MISC_LOOKUP[assetUrl] = itemName
+                end
+            end
+        end
+    else
+        warn("❌ Failed to fetch Misc Items Database.")
+    end
+end
+
+-- Run both API fetches at the same time
+task.spawn(fetchPetsDatabase)
+task.spawn(fetchMiscDatabase)
+
+-- Wait a short time for both to complete
+task.wait(2)
+
+-- Function to find Huge Piggy in either database
+local function findHugePiggy()
+    local petName = "Huge Piggy"
+    if PETS_DATABASE[petName] then
+        print("✅ Found Huge Piggy in Pets Database! Icon:", PETS_DATABASE[petName])
+    elseif MISC_DATABASE[petName] then
+        print("✅ Found Huge Piggy in Misc Items Database! Icon:", MISC_DATABASE[petName])
+    else
+        print("❌ Huge Piggy not found in any database.")
+    end
+end
+
+-- Check for Huge Piggy
+findHugePiggy()
