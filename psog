@@ -1,21 +1,5 @@
 local HttpService = game:GetService("HttpService")
 
--- Fetch pets data
-local function fetchPetsDatabase()
-    local success, response = pcall(function()
-        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/Pets")
-        return HttpService:JSONDecode(apiResponse)
-    end)
-
-    if success then
-        print("Pets Database Data: ", response)  -- Print the entire pets data
-        return response -- Return decoded pets data
-    else
-        warn("⚠️ Failed to fetch pets data!")
-        return nil
-    end
-end
-
 -- Fetch RAP data
 local function fetchRAPData()
     local success, response = pcall(function()
@@ -24,7 +8,7 @@ local function fetchRAPData()
     end)
 
     if success then
-        print("RAP Data: ", response)  -- Print the entire RAP data
+        print("RAP Data: ", response)  -- Print the entire RAP data to inspect the structure
         return response -- Return decoded RAP data
     else
         warn("⚠️ Failed to fetch RAP data!")
@@ -34,10 +18,13 @@ end
 
 -- Function to get RAP value for a specific pet
 local function getRAPValue(petName, rapData)
+    -- Debug print to inspect the structure of rapData
+    print("Inspecting RAP Data structure:")
     for _, pet in ipairs(rapData) do
+        print("Pet name: " .. pet.configData.id .. ", RAP value: " .. pet.configData.value) -- Correct field
+        -- Check if the pet's name matches
         if pet.configData.id == petName then
-            local rapValue = pet.value  -- Define rapValue here
-            return rapValue  -- Return the rapValue
+            return pet.configData.value  -- Return the RAP value if pet matches
         end
     end
     return nil -- Return nil if pet not found
