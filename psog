@@ -54,7 +54,7 @@ task.spawn(fetchPetsDatabase)
 task.spawn(fetchMiscDatabase)
 
 -- Wait a short time for both to complete
-task.wait(2)
+task.wait()
 
 -- Function to find Huge Piggy in either database
 local function findHugePiggy()
