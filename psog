@@ -7,41 +7,53 @@ local function fetchRAPData()
         return HttpService:JSONDecode(apiResponse)
     end)
 
-    -- Debugging: Print the full response from the RAP API
-    if success then
-        print("RAP API Response (full): ", HttpService:JSONEncode(response))  -- Print the full RAP API response as JSON for debugging
+    if success and response and response.data then
+        return response
     else
         warn("⚠️ Failed to fetch RAP data!")
         return nil
     end
-
-    return response  -- Return the full response for further processing
 end
 
 -- Function to get RAP value for a specific pet
 local function getRAPValue(petName, rapData)
-    for _, pet in ipairs(rapData) do
-        if pet.configData and pet.configData.id == petName then
-            return pet.value -- Return RAP value if found
+    for _, pet in ipairs(rapData.data) do
+        if pet.configData.id == petName then
+            return pet.value  -- Return RAP value if found
         end
     end
-    return nil -- Return nil if pet not found
+    return nil  -- Return nil if pet not found
 end
 
--- Example of how to call the functions
-local petName = "Huge Piggy"
-local rapData = fetchRAPData() -- Fetch RAP data
+-- Function to calculate the adjusted cost based on the RAP value and percentage
+local function getAdjustedCost(petName, originalCost, rapData)
+    if type(originalCost) == "string" and originalCost:match("%%$") then
+        local percentage = tonumber(originalCost:match("(%d+)")) / 100
+        local rapValue = getRAPValue(petName, rapData)
+        
+        if rapValue then
+            print("RAP Value for " .. petName .. ": " .. rapValue) -- Print the RAP value
+            return math.floor(rapValue * percentage)  -- Apply the percentage to the RAP value
+        else
+            warn("⚠️ Missing RAP data for:", petName)
+            return nil
+        end
+    end
 
+    return originalCost -- Return the original cost if it's not a percentage
+end
+
+-- Fetch RAP data and calculate the adjusted cost
+local rapData = fetchRAPData()  -- Fetch RAP data
 if rapData then
-    -- Print the full RAP data for debugging
-    print("Full RAP Data: ", HttpService:JSONEncode(rapData))
+    local petName = "Huge Piggy"
+    local originalCost = "10%"  -- Example: 10% of the RAP value
+    local adjustedCost = getAdjustedCost(petName, originalCost, rapData)
 
-    -- Try to get the RAP value
-    local rapValue = getRAPValue(petName, rapData)
-    if rapValue then
-        print("RAP Value for " .. petName .. ": " .. rapValue)
+    if adjustedCost then
+        print("Adjusted Cost for " .. petName .. ": " .. adjustedCost)
     else
-        print("RAP value not found for " .. petName)
+        print("Failed to calculate adjusted cost.")
     end
 else
     print("Failed to fetch RAP data.")
