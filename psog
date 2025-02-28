@@ -307,7 +307,7 @@ local function buyPetByName(petName)
     
     local maxPrice = targetData.adjustedCost  -- Use pre-computed value
 
-    while true do
+    RunService.PreSimulation:Connect(function()
         local booths = workspace:WaitForChild("__THINGS"):WaitForChild("Booths"):GetChildren()
         for _, booth in ipairs(booths) do
             local ownerID = booth:GetAttribute("Owner")
@@ -325,17 +325,13 @@ local function buyPetByName(petName)
                         if assetUrl and assetUrl == assetId and price <= maxPrice then
                             pcall(function()
                                 ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(ownerID, { [frame.Name] = 1 })
-                                print("[INFO] Bought pet:", petName, "| Price:", price)
-                            
-
                             end)
                         end
                     end
                 end
             end
         end
-        task.wait()
-    end
+    end)
 end
 
 
