@@ -148,8 +148,6 @@ local function GetRap()
 
     local apiData = fetchRapData()
     local Rap_DATABASE = {}
-    print("\n📢 Fetching RAP data...\n")
-
     -- Store RAP values for target items
     for _, item in ipairs(apiData) do
         local config = item.configData
@@ -179,8 +177,6 @@ local function GetRap()
             adjustedResell = adjustedResell
         }
 
-        -- Print for debugging
-        print(("✅ Adjusted: %s | Cost: %d | Resell: %d"):format(petName, adjustedCost, adjustedResell))
     end
 
     return Rap_DATABASE, AdjustedValues
@@ -351,7 +347,6 @@ local function buyPetByName(petName)
             local petData = table.remove(petQueue, 1) -- Get the first pet in queue
             pcall(function()
                 ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(petData.ownerID, { [petData.frame.Name] = 1 })
-                print("[SNIPER] Bought pet:", petData.petName, "| Price:", petData.price)
             end)
         end
     end)
@@ -378,18 +373,9 @@ local function claimRandomBooth()
                     pcall(function()
                         -- Invoke the Booth claim remote to claim the booth
                         game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Booths_ClaimBooth"):InvokeServer(unpack(args))
-                        print("[INFO] Successfully claimed booth with ID:", boothId)
                         return boothId  -- Return the booth ID if successfully claimed
                     end)
-                else
-                    print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid ID attribute.")
-                end
-            else
-                print("[INFO] Booth", randomBooth.Name, "is not available for claiming.")
             end
-        else
-            print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid booth object.")
-        end
     end
 end
 
@@ -444,7 +430,6 @@ local function sellPet(petId, resellPrice)
 
 
 
-    print("[INFO] List attempt:", petId, "| Success:", success)
 
     if success then
 
@@ -492,10 +477,8 @@ end
 
 
 local function joinLowPopulationServer()
-    print("[INFO] Starting Server Join Process...")
-
     while true do
-task.wait(15)
+task.wait(60)
         local success, response = pcall(function()
             return HttpService:JSONDecode(
                 game:HttpGet("https://games.roblox.com/v1/games/" .. tostring(game.PlaceId) .. "/servers/Public?sortOrder=Desc&limit=100")
@@ -505,23 +488,16 @@ task.wait(15)
         if success and response and response.data then
             for _, server in ipairs(response.data) do
                 if server.id ~= game.JobId and server.playing <= 35 then
-                    print(("[SERVER] Attempting to join server ID: %s with %s players..."):format(server.id, server.playing))
 
                     local teleportSuccess, teleportError = pcall(function()
                         TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
                     end)
 
                     if teleportSuccess then
-                        print("[SUCCESS] Successfully joined new server.")
                         return  -- Exit after successfully joining a server
-                    else
-                        print("[ERROR] Teleport failed:", teleportError)
                     end
                 end
             end
-        else
-            print("[ERROR] Failed to fetch server list, retrying...")
-        end
 
         task.wait(3)  -- Retry every 3 seconds if no valid servers are found
     end
@@ -547,7 +523,6 @@ local function main()
         local currentGems = convertGems(player.PlayerGui.Main.Top.Diamonds.Amount.Text)
 
         if currentGems >= CONFIG.MIN_GEMS then
-            print("💰 Starting snipe mode")
             isSnipingActive = true  -- Mark sniping as active
 
             for petName, data in pairs(CONFIG.TARGET_ITEMS) do
@@ -561,7 +536,6 @@ local function main()
                 joinLowPopulationServer()
             end
         else
-            print("🛒 Starting sell mode")
             isSnipingActive = false  -- Mark sniping as inactive when in sell mode
 
             -- Only claim booths and sell pets in sell mode
