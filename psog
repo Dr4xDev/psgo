@@ -1,6 +1,4 @@
 repeat task.wait() until game:IsLoaded()
-
-task.wait(15)
 getgenv().Settings = {
 
     joinPopularServer = true,
@@ -11,76 +9,86 @@ getgenv().Settings = {
 
 
 
-local CONFIG = {
-    TARGET_ITEMS = {
-    ["Huge Piggy"] = { cost = "100%", resell = "100%" },
-    ["Huge Shark"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Monkey"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Angry Yeti"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Cat"] = { cost = 200000000, resell = 400000000 },
-    ["Huge Dog"] = { cost = 80000000, resell = 120000000 },
-    ["Huge Elephant"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Hell Rock"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Bear"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Ducky"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Shiba"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Nightmare Corgi"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Jelly Axolotl"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Jelly Panda"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Pilgrim Turkey"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Evil Snowman"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Kitsune Fox"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Dalmatian"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Inferno Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Ghostface Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Cosmic Axolotl"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Red Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Sleigh Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Grinch Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Abyssal Jellyfish"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Silver Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Reindeer"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Calico Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Present Chest Mimic"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Jolly Moose"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Festive Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Jolly Penguin"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Party Tiger"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Gingerbread Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Corrupt Octopus"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Amethyst Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Fossil Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Mosaic Griffin"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Black Hole Angelus"] = { cost = 5000000, resell = 5300000 },
-    ["Huge M-6 PROTOTYPE"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Glitched Phoenix"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Blurred Axolotl"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Red Fluffy"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Thunder Bear"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Atlantean Jellyfish"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Flex Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Colorful Rock"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Hell Chest Mimic"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Blazing Dragon"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Umbrella Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Valentine's Dominus"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Valentine's Unicorn"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Valentine's Bear"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Heartbreak Fairy"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Love Peacock"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Raining Love Dog"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Parrot"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Froggy"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Llama"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Pineapple Cat"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Dino Dog"] = { cost = 5000000, resell = 5300000 },
-    ["Huge Arcade Cat"] = { cost = 5000000,  }
-    },
+    local CONFIG = {
+        TARGET_ITEMS = {
+            ["Huge Piggy"] = { cost = "95%", resell = "100%" },
+            ["Huge Shark"] = { cost = "95%", resell = "100%" },
+            ["Huge "] = { cost = "95%", resell = "100%" },
+            ["Huge Angry Yeti"] = { cost = "95%", resell = "100%" },
+            ["Huge Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Dog"] = { cost = "95%", resell = "100%" },
+            ["Huge Elephant"] = { cost = "95%", resell = "100%" },
+            ["Huge Hell Rock"] = { cost = "95%", resell = "100%" },
+            ["Huge Bear"] = { cost = "95%", resell = "100%" },
+            ["Huge Ducky"] = { cost = "95%", resell = "100%" },
+            ["Huge Shiba"] = { cost = "95%", resell = "100%" },
+            ["Huge Nightmare Corgi"] = { cost = "95%", resell = "100%" },
+            ["Huge Jelly Axolotl"] = { cost = "95%", resell = "100%" },
+            ["Huge Jelly Panda"] = { cost = "95%", resell = "100%" },
+            ["Huge Pilgrim Turkey"] = { cost = "95%", resell = "100%" },
+            ["Huge Evil Snowman"] = { cost = "95%", resell = "100%" },
+            ["Huge Kitsune Fox"] = { cost = "95%", resell = "100%" },
+            ["Huge Dalmatian"] = { cost = "95%", resell = "100%" },
+            ["Huge Inferno Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Ghostface Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Cosmic Axolotl"] = { cost = "95%", resell = "100%" },
+            ["Huge Red Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Sleigh Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Grinch Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Abyssal Jellyfish"] = { cost = "95%", resell = "100%" },
+            ["Huge Silver Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Reindeer"] = { cost = "95%", resell = "100%" },
+            ["Huge Calico Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Present Chest Mimic"] = { cost = "95%", resell = "100%" },
+            ["Huge Jolly Moose"] = { cost = "95%", resell = "100%" },
+            ["Huge Festive Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Jolly Penguin"] = { cost = "95%", resell = "100%" },
+            ["Huge Party Tiger"] = { cost = "95%", resell = "100%" },
+            ["Huge Gingerbread Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Corrupt Octopus"] = { cost = "95%", resell = "100%" },
+            ["Huge Amethyst Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Fossil Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Mosaic Griffin"] = { cost = "95%", resell = "100%" },
+            ["Huge Black Hole Angelus"] = { cost = "95%", resell = "100%" },
+            ["Huge M-6 PROTOTYPE"] = { cost = "95%", resell = "100%" },
+            ["Huge Glitched Phoenix"] = { cost = "95%", resell = "100%" },
+            ["Huge Blurred Axolotl"] = { cost = "95%", resell = "100%" },
+            ["Huge Red Fluffy"] = { cost = "95%", resell = "100%" },
+            ["Huge Thunder Bear"] = { cost = "95%", resell = "100%" },
+            ["Huge Atlantean Jellyfish"] = { cost = "95%", resell = "100%" },
+            ["Huge Flex Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Colorful Rock"] = { cost = "95%", resell = "100%" },
+            ["Huge Hell Chest Mimic"] = { cost = "95%", resell = "100%" },
+            ["Huge Blazing Dragon"] = { cost = "95%", resell = "100%" },
+            ["Huge Umbrella Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Valentine's Dominus"] = { cost = "95%", resell = "100%" },
+            ["Huge Valentine's Unicorn"] = { cost = "95%", resell = "100%" },
+            ["Huge Valentine's Bear"] = { cost = "95%", resell = "100%" },
+            ["Huge Heartbreak Fairy"] = { cost = "95%", resell = "100%" },
+            ["Huge Love Peacock"] = { cost = "95%", resell = "100%" },
+            ["Huge Raining Love Dog"] = { cost = "95%", resell = "100%" },
+            ["Huge Parrot"] = { cost = "95%", resell = "100%" },
+            ["Huge Froggy"] = { cost = "95%", resell = "100%" },
+            ["Huge Llama"] = { cost = "95%", resell = "100%" },
+            ["Huge Pineapple Cat"] = { cost = "95%", resell = "100%" },
+            ["Huge Dino Dog"] = { cost = "95%", resell = "100%" },
+            ["Huge Arcade Cat"] = { cost = "95%", resell = "100%" },
+            ["Titanic Mr. Love Cat"] = { cost = "95%", resell = "100%" },
+            ["Titanic Valentines Angelus"] = { cost = "95%", resell = "100%" },
+            ["Titanic Diamond Dragon"] = { cost = "95%", resell = "100%" },
+            ["Titanic Reindeer Cat"] = { cost = "95%", resell = "100%" },
+            ["Titanic Storm Agony"] = { cost = "95%", resell = "100%" },
+            ["Titanic Cat"] = { cost = "95%", resell = "100%" },
+            ["Titanic Shattered Heart Agony"] = { cost = "95%", resell = "100%" },
+            ["Titanic Blazing Bat"] = { cost = "95%", resell = "100%" }
+        },
+    
+        MIN_GEMS = 20000000,  -- Minimum gems before sniping, otherwise it will sell
+        SERVER_HOP_INTERVAL = 600  -- 10 minutes in seconds
+    }
 
-    MIN_GEMS = 20000000,  -- Minimum gems before sniping, otherwise it will sell
-    SERVER_HOP_INTERVAL = 600  -- 10 minutes in seconds
-}
+
 
 
 
@@ -104,75 +112,80 @@ local inventory = Save.Get()["Inventory"]
 
 local pet = inventory.Pet
 
-local function mokker()
-    -- Get the RemoteFunction for "Travel to Trading Plaza"
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local remoteFunction = ReplicatedStorage:WaitForChild("Network"):WaitForChild("Travel to Trading Plaza")
-    
-    -- Check if PotionVendingMachine exists
-    local potionVendingMachine = workspace:FindFirstChild("MAP") 
-                                  and workspace.MAP:FindFirstChild("INTERACT") 
-                                  and workspace.MAP.INTERACT:FindFirstChild("Machines") 
-                                  and workspace.MAP.INTERACT.Machines:FindFirstChild("PotionVendingMachine")
-
-    if potionVendingMachine then
-        -- Fire the remote to teleport if PotionVendingMachine exists
-        local args = { [1] = 19006211286 }
-        remoteFunction:InvokeServer(unpack(args))
-        print("Remote fired: Travel to Trading Plaza initiated.")
-    else
-        print("PotionVendingMachine does not exist.")
-    end
+local function round(num)
+    return math.floor(num + 0.5)
 end
 
+-- Table to store adjusted costs and resells
+local AdjustedValues = {}
 
-local HttpService = game:GetService("HttpService")
+local function GetRap()
+    local HttpService = game:GetService("HttpService")
 
-local function fetchRAPData()
-    local success, response = pcall(function()
-        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/rap")
-        return HttpService:JSONDecode(apiResponse)
-    end)
+    -- Convert percentage string to a number (e.g., "98%" -> 1.05)
+    local function safePercentage(value)
+        local num = tonumber(value and value:gsub("%%", "") or "0")
+        return num and num / 100 or 0
+    end
 
-    if success and response and response.data then
-        local RAP_TABLE = {}
-        for _, pet in pairs(response.data) do
-            if pet.configData and pet.configData.id and pet.value then
-                RAP_TABLE[pet.configData.id] = pet.value
+    -- Fetch RAP data with retries (max 3)
+    local function fetchRapData()
+        for attempt = 1, 3 do
+            local success, response = pcall(function()
+                return HttpService:JSONDecode(game:HttpGet("https://petsgo.biggamesapi.io/api/rap"))
+            end)
+
+            if success and response and response.data then
+                return response.data
             end
+
+            warn(("❌ RAP fetch failed! Attempt %d/3. Retrying in 3s..."):format(attempt))
+            task.wait()
         end
-        return RAP_TABLE
-    else
-        warn("⚠️ Please Report This to Staff")
-        return nil
+
+        error("❌ Max retries reached! Could not fetch RAP data.")
     end
-end
 
-local function calculateCost(petName, cost, rapData)
-    if type(cost) == "string" and cost:match("%%$") then
-        local percentage = tonumber(cost:match("(%d+)")) / 100
-        local rapValue = rapData[petName]
+    local apiData = fetchRapData()
+    local Rap_DATABASE = {}
+    print("\n📢 Fetching RAP data...\n")
 
-        if rapValue then
-            return math.floor(rapValue * percentage)
-        else
-            warn("⚠️ Please Report this to staff:", petName)
-            return nil
+    -- Store RAP values for target items
+    for _, item in ipairs(apiData) do
+        local config = item.configData
+        if not (config and typeof(config) == "table" and not config.sh) then
+            continue -- Skip invalid or shiny items
         end
-    end
-    return cost -- If cost is not a percentage, return it as-is
-end
 
--- Fetch RAP data and cycle through CONFIG items
-local rapData = fetchRAPData()
-if rapData then
+        local petName, rapValue = config.id, item.value
+        Rap_DATABASE[petName] = rapValue
+    end
+
+    -- Adjust values based on CONFIG.TARGET_ITEMS
     for petName, data in pairs(CONFIG.TARGET_ITEMS) do
-        local adjustedCost = calculateCost(petName, data.cost, rapData)
-        local adjustedResell = calculateCost(petName, data.resell, rapData)
+        local rapValue = Rap_DATABASE[petName] or 0  -- Default to 0 if not found
+
+        -- Get cost and resell percentages from CONFIG
+        local numericCost = safePercentage(data.cost)
+        local numericResell = safePercentage(data.resell)
+
+        -- Calculate adjusted values
+        local adjustedCost = math.floor(rapValue * numericCost + 0.5)
+        local adjustedResell = math.floor(rapValue * numericResell + 0.5)
+
+        -- Store adjusted values
+        AdjustedValues[petName] = {
+            adjustedCost = adjustedCost,
+            adjustedResell = adjustedResell
+        }
+
+        -- Print for debugging
+        print(("✅ Adjusted: %s | Cost: %d | Resell: %d"):format(petName, adjustedCost, adjustedResell))
     end
-else
-    print("❌ Report This via Reports in discord.")
+
+    return Rap_DATABASE, AdjustedValues
 end
+
 
 
 
@@ -191,15 +204,15 @@ local function convertGems(gemsString)
 
     if suffix == "k" then
 
-        return number * 1000
+        return number * 1100
 
     elseif suffix == "m" then
 
-        return number * 1000000
+        return number * 1100000
 
     elseif suffix == "b" then
 
-        return number * 1000000000
+        return number * 1100000000
 
     end
 
@@ -207,135 +220,121 @@ local function convertGems(gemsString)
 
 end
 
-local HttpService = game:GetService("HttpService")
+-- Fetch pet database from API
+
 
 -- Fetch pet database from API
+
 local function fetchPetsDatabase()
+
     local success, response = pcall(function()
+
         local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/Pets")
+
         return HttpService:JSONDecode(apiResponse)
+
     end)
 
+
+
     if success and response and response.data then
+
         local PETS_DATABASE = {}
+
         local REVERSE_LOOKUP = {}
 
+
+
         for _, item in pairs(response.data) do
+
             if item.configData and typeof(item.configData) == "table" then
+
                 local assetUrl = item.configData.thumbnail
+
                 local itemName = item.configData.name
 
+
+
                 if assetUrl and itemName then
+
                     PETS_DATABASE[assetUrl] = itemName
+
                     REVERSE_LOOKUP[itemName] = assetUrl
+
                 end
+
             end
+
         end
 
         return PETS_DATABASE, REVERSE_LOOKUP
+
     else
+
         warn("[❌ ERROR] Failed to fetch pets database!")
+
         return {}, {}
+
     end
+
 end
 
--- Fetch misc items database from API
-local function fetchMiscDatabase()
-    local success, response = pcall(function()
-        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/MiscItems")
-        return HttpService:JSONDecode(apiResponse)
-    end)
 
-    if success and response and response.data then
-        local MISC_DATABASE = {}
-        local MISC_LOOKUP = {}
 
-        for _, item in pairs(response.data) do
-            if item.configData and typeof(item.configData) == "table" then
-                local assetUrl = item.configData.icon  -- Misc items use 'icon' instead of 'thumbnail'
-                local itemName = item.configData.configName
+local PETS_DATABASE, REVERSE_LOOKUP = fetchPetsDatabase()
 
-                if assetUrl and itemName then
-                    MISC_DATABASE[itemName] = assetUrl
-                    MISC_LOOKUP[assetUrl] = itemName
-                end
-            end
-        end
 
-        return MISC_DATABASE, MISC_LOOKUP
-    else
-        warn("[❌ ERROR] Failed to fetch misc items database!")
-        return {}, {}
+
+local function getAssetIdByName(petName)
+
+    return REVERSE_LOOKUP[petName]
+
+end
+
+local function buyPetByName(petName)
+    local assetId = getAssetIdByName(petName)
+    if not assetId then 
+        warn("Asset ID not found for:", petName)
+        return 
     end
-end
-
--- Fetch both pet and misc items databases at the same time
-local function fetchDatabases()
-    local PETS_DATABASE, REVERSE_LOOKUP = {}, {}
-    local MISC_DATABASE, MISC_LOOKUP = {}, {}
-
-    spawn(function()
-        PETS_DATABASE, REVERSE_LOOKUP = fetchPetsDatabase()
-    end)
-
-    spawn(function()
-        MISC_DATABASE, MISC_LOOKUP = fetchMiscDatabase()
-    end)
-
-    -- Wait a bit to make sure the databases are fetched
-    task.wait(3)
-
-    return PETS_DATABASE, REVERSE_LOOKUP, MISC_DATABASE, MISC_LOOKUP
-end
-
--- Function to get the asset ID by pet or misc item name
-local function getAssetIdByName(name)
-    -- Try fetching the asset from pets
-    local petAsset = REVERSE_LOOKUP[name]
-
-    -- Try fetching the asset from misc items
-    local miscAsset = MISC_LOOKUP[name]
-
-    -- Return whichever is found, otherwise nil
-    return petAsset or miscAsset
-end
-
--- Function to buy a pet or misc item by name
-local function buyItemByName(itemName, adjustedCost)
-    local assetId = getAssetIdByName(itemName)
-
-    if not assetId then
+    
+    -- Get pre-calculated adjusted cost from AdjustedValues
+    local targetData = AdjustedValues[petName]
+    if not targetData or not targetData.adjustedCost then
+        warn("No adjusted cost found for:", petName)
         return
     end
+    
+    local maxPrice = targetData.adjustedCost  -- Use pre-computed value
 
     while true do
         local booths = workspace:WaitForChild("__THINGS"):WaitForChild("Booths"):GetChildren()
-
         for _, booth in ipairs(booths) do
             local ownerID = booth:GetAttribute("Owner")
             local petScroll = booth:FindFirstChild("Pets") and booth.Pets:FindFirstChild("BoothTop") and booth.Pets.BoothTop:FindFirstChild("PetScroll")
-
+            
             if petScroll then
                 for _, frame in ipairs(petScroll:GetChildren()) do
                     local itemSlot = frame:FindFirstChild("Holder") and frame.Holder:FindFirstChild("ItemSlot")
                     local buy = frame:FindFirstChild("Buy")
-
                     if itemSlot and buy then
                         local icon = itemSlot:FindFirstChild("Icon")
                         local price = convertGems(buy.Cost.Text)
                         local assetUrl = icon and icon.Image
 
-                        if assetUrl and assetUrl == assetId and price <= adjustedCost then
+                        if assetUrl and assetUrl == assetId and price <= maxPrice then
                             pcall(function()
                                 ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(ownerID, { [frame.Name] = 1 })
+                                print("[INFO] Bought pet:", petName, "| Price:", price)
+                            
+
                             end)
                         end
                     end
                 end
             end
         end
-
-        task.wait(5)
+        task.wait()
     end
 end
 
@@ -385,30 +384,28 @@ end
 
 
 
+
+
+
 -- Function to sell pet with quantity set to 1 (UPDATED)
 
 local function sellPet(petId, resellPrice)
+    task.wait(2)
+    -- Keep original arguments but use pre-calculated resell price
+    local petName = pet[petId].id  -- Get pet name from ID
+    local actualPrice = AdjustedValues[petName].adjustedResell
 
     if Settings.listedPetIDs[petId] then return false end
-
     
-
     local args = {
-
         [1] = petId,
-
-        [2] = resellPrice,
-
+        [2] = actualPrice,  -- Use RAP-based price
         [3] = 1
-
     }
 
-
-
+    -- Keep rest of your original sell function
     local success = pcall(function()
-
         ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(unpack(args))
-
     end)
 
     
@@ -443,54 +440,18 @@ end
 
 
 
+-- Modified findAndAutosellPets
 local function findAndAutosellPets()
-
-
-
-    -- Loop through all pets in the 'Pet' table
-
     for petId, petData in pairs(pet) do
-
-        -- Directly list the pet without checking cache
-
-        local petName = petData.id -- Assuming 'id' is the pet name
-
-        local quantity = petData._am or 1  -- Force quantity to 1 if not set
-
-
-
-        -- Skip if pet has invalid or zero quantity
-
-        if not quantity or quantity <= 0 then
-
-                        continue
-
-        end
-
-
-
-        -- If pet matches the target items, sell it
-
-        if CONFIG.TARGET_ITEMS[petName] and CONFIG.TARGET_ITEMS[petName].resell then
-            local resellPrice = CONFIG.TARGET_ITEMS[petName].resell
-            -- Call the function to sell the pet with forced quantity of 1
-
-            local success = sellPet(petId, resellPrice, 1)
-
-
-
-            -- Wait before listing the next pet (this ensures no simultaneous remote requests)
-
+        local petName = petData.id
+        if CONFIG.TARGET_ITEMS[petName] then
             task.wait(5)  -- 5 seconds delay before listing the next pet
-
-        else
-
+            local resellPrice = CONFIG.TARGET_ITEMS[petName].adjustedResell
+            local success = sellPet(petId, resellPrice)
+            task.wait(5)
         end
-
     end
-
 end
-
 
 local function nokker()
     -- Get the RemoteFunction for "Travel to Trading Plaza"
@@ -509,10 +470,6 @@ local function nokker()
         remoteFunction:InvokeServer(unpack(args)) 
        end
 end
-
-
-
-
 
 
 
@@ -561,16 +518,13 @@ local isSnipingActive = false  -- Variable to track if sniping is active
 
 function Sniell()
     task.spawn(function() findAndAutosellPets() end)
-    task.spawn(function() buyItemByName(itemName, adjustedCost) end)
+    task.spawn(function() buyPetByName(petName, maxPrice) end)
 end
 
- 
-
--- Main execution
 local function main()
     nokker()
-    local lastHop = os.time()
 
+    GetRap()
     while true do
         local currentGems = convertGems(player.PlayerGui.Main.Top.Diamonds.Amount.Text)
 
@@ -579,13 +533,14 @@ local function main()
             isSnipingActive = true  -- Mark sniping as active
 
             for petName, data in pairs(CONFIG.TARGET_ITEMS) do
-                task.spawn(buyItemByName(itemName, adjustedCost)
+                task.spawn(buyPetByName, petName, data.cost)
             end
 
             -- Server hop loop for sniping mode
             while isSnipingActive do  -- Keep server hopping only while sniping is active
-                joinLowPopulationServer()
                 task.wait(30)  -- You can adjust this time to suit the need for delay between hops
+
+                joinLowPopulationServer()
             end
         else
             print("🛒 Starting sell mode")
@@ -597,11 +552,13 @@ local function main()
 
             -- Sell pets in sell mode
             Sniell()
-task.wait(240)
-                joinLowPopulationServer()
-            end
-
-            task.wait(60) -- Check every minute
+            task.wait(240)
+            joinLowPopulationServer()
         end
+
+        task.wait(60) -- Check every minute
     end
+end 
+
 main()
+ 
