@@ -291,49 +291,71 @@ local function getAssetIdByName(petName)
 
 end
 
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local petQueue = {} -- Queue for pets found in PreSimulation
+
 local function buyPetByName(petName)
     local assetId = getAssetIdByName(petName)
     if not assetId then 
         warn("Asset ID not found for:", petName)
         return 
     end
-    
+
     -- Get pre-calculated adjusted cost from AdjustedValues
     local targetData = AdjustedValues[petName]
     if not targetData or not targetData.adjustedCost then
         warn("No adjusted cost found for:", petName)
         return
     end
-    
+
     local maxPrice = targetData.adjustedCost  -- Use pre-computed value
 
+    -- ✅ Use PreSimulation for the fastest booth scanning
     RunService.PreSimulation:Connect(function()
-        local booths = workspace:WaitForChild("__THINGS"):WaitForChild("Booths"):GetChildren()
-        for _, booth in ipairs(booths) do
+        local booths = workspace:FindFirstChild("__THINGS") and workspace.__THINGS:FindFirstChild("Booths")
+        if not booths then return end
+
+        for _, booth in ipairs(booths:GetChildren()) do
             local ownerID = booth:GetAttribute("Owner")
-            local petScroll = booth:FindFirstChild("Pets") and booth.Pets:FindFirstChild("BoothTop") and booth.Pets.BoothTop:FindFirstChild("PetScroll")
-            
+            local petScroll = booth:FindFirstChild("Pets") 
+                and booth.Pets:FindFirstChild("BoothTop") 
+                and booth.Pets.BoothTop:FindFirstChild("PetScroll")
+
             if petScroll then
                 for _, frame in ipairs(petScroll:GetChildren()) do
-                    local itemSlot = frame:FindFirstChild("Holder") and frame.Holder:FindFirstChild("ItemSlot")
+                    local itemSlot = frame:FindFirstChild("Holder") 
+                        and frame.Holder:FindFirstChild("ItemSlot")
                     local buy = frame:FindFirstChild("Buy")
+
                     if itemSlot and buy then
                         local icon = itemSlot:FindFirstChild("Icon")
                         local price = convertGems(buy.Cost.Text)
                         local assetUrl = icon and icon.Image
 
+                        -- ✅ Store pet in queue to be processed in Stepped
                         if assetUrl and assetUrl == assetId and price <= maxPrice then
-                            pcall(function()
-                                ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(ownerID, { [frame.Name] = 1 })
-                            end)
+                            table.insert(petQueue, { ownerID = ownerID, frame = frame, petName = petName, price = price })
                         end
                     end
                 end
             end
         end
     end)
-end
 
+    -- ✅ Use Stepped to send purchase requests FASTER than Heartbeat
+    RunService.Stepped:Connect(function()
+        while #petQueue > 0 do
+            local petData = table.remove(petQueue, 1) -- Get the first pet in queue
+            pcall(function()
+                ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(petData.ownerID, { [petData.frame.Name] = 1 })
+                print("[SNIPER] Bought pet:", petData.petName, "| Price:", petData.price)
+            end)
+        end
+    end)
+end
 
 
 local function claimRandomBooth()
