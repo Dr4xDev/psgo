@@ -9,7 +9,7 @@ getgenv().Settings = {
 
 
 
-    local CONFIG = {
+    getgenv().CONFIG = {
         TARGET_ITEMS = {
             ["Huge Piggy"] = { cost = "95%", resell = "100%" },
             ["Huge Shark"] = { cost = "95%", resell = "100%" },
@@ -84,7 +84,7 @@ getgenv().Settings = {
             ["Titanic Blazing Bat"] = { cost = "95%", resell = "100%" }
         },
     
-        MIN_GEMS = 20000000,  -- Minimum gems before sniping, otherwise it will sell
+        MIN_GEMS = 20000000000000000,  -- Minimum gems before sniping, otherwise it will sell
         SERVER_HOP_INTERVAL = 600  -- 10 minutes in seconds
     }
 
@@ -148,6 +148,7 @@ local function GetRap()
 
     local apiData = fetchRapData()
     local Rap_DATABASE = {}
+
     -- Store RAP values for target items
     for _, item in ipairs(apiData) do
         local config = item.configData
@@ -177,6 +178,7 @@ local function GetRap()
             adjustedResell = adjustedResell
         }
 
+        -- Print for debugging
     end
 
     return Rap_DATABASE, AdjustedValues
@@ -287,70 +289,52 @@ local function getAssetIdByName(petName)
 
 end
 
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local petQueue = {} -- Queue for pets found in PreSimulation
-
 local function buyPetByName(petName)
     local assetId = getAssetIdByName(petName)
     if not assetId then 
         warn("Asset ID not found for:", petName)
         return 
     end
-
+    
     -- Get pre-calculated adjusted cost from AdjustedValues
     local targetData = AdjustedValues[petName]
     if not targetData or not targetData.adjustedCost then
         warn("No adjusted cost found for:", petName)
         return
     end
-
+    
     local maxPrice = targetData.adjustedCost  -- Use pre-computed value
 
-    -- ✅ Use PreSimulation for the fastest booth scanning
-    RunService.PreSimulation:Connect(function()
-        local booths = workspace:FindFirstChild("__THINGS") and workspace.__THINGS:FindFirstChild("Booths")
-        if not booths then return end
-
-        for _, booth in ipairs(booths:GetChildren()) do
+    while true do
+        local booths = workspace:WaitForChild("__THINGS"):WaitForChild("Booths"):GetChildren()
+        for _, booth in ipairs(booths) do
             local ownerID = booth:GetAttribute("Owner")
-            local petScroll = booth:FindFirstChild("Pets") 
-                and booth.Pets:FindFirstChild("BoothTop") 
-                and booth.Pets.BoothTop:FindFirstChild("PetScroll")
-
+            local petScroll = booth:FindFirstChild("Pets") and booth.Pets:FindFirstChild("BoothTop") and booth.Pets.BoothTop:FindFirstChild("PetScroll")
+            
             if petScroll then
                 for _, frame in ipairs(petScroll:GetChildren()) do
-                    local itemSlot = frame:FindFirstChild("Holder") 
-                        and frame.Holder:FindFirstChild("ItemSlot")
+                    local itemSlot = frame:FindFirstChild("Holder") and frame.Holder:FindFirstChild("ItemSlot")
                     local buy = frame:FindFirstChild("Buy")
-
                     if itemSlot and buy then
                         local icon = itemSlot:FindFirstChild("Icon")
                         local price = convertGems(buy.Cost.Text)
                         local assetUrl = icon and icon.Image
 
-                        -- ✅ Store pet in queue to be processed in Stepped
                         if assetUrl and assetUrl == assetId and price <= maxPrice then
-                            table.insert(petQueue, { ownerID = ownerID, frame = frame, petName = petName, price = price })
+                            pcall(function()
+                                ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(ownerID, { [frame.Name] = 1 })
+                            
+
+                            end)
                         end
                     end
                 end
             end
         end
-    end)
-
-    -- ✅ Use Stepped to send purchase requests FASTER than Heartbeat
-    RunService.Stepped:Connect(function()
-        while #petQueue > 0 do
-            local petData = table.remove(petQueue, 1) -- Get the first pet in queue
-            pcall(function()
-                ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(petData.ownerID, { [petData.frame.Name] = 1 })
-            end)
-        end
-    end)
+        task.wait()
+    end
 end
+
 
 
 local function claimRandomBooth()
@@ -375,21 +359,17 @@ local function claimRandomBooth()
                         game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Booths_ClaimBooth"):InvokeServer(unpack(args))
                         return boothId  -- Return the booth ID if successfully claimed
                     end)
+                else
+                    print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid ID attribute.")
+                end
+            else
+                print("[INFO] Booth", randomBooth.Name, "is not available for claiming.")
             end
+        else
+            print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid booth object.")
+        end
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
 -- Function to sell pet with quantity set to 1 (UPDATED)
 
@@ -411,9 +391,6 @@ local function sellPet(petId, resellPrice)
     local success = pcall(function()
         ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(unpack(args))
     end)
-
-    
-
     -- Verify actual removal from inventory
 
     if success then
@@ -427,10 +404,6 @@ local function sellPet(petId, resellPrice)
         success = verify
 
     end
-
-
-
-
     if success then
 
         Settings.listedPetIDs[petId] = true
@@ -474,11 +447,10 @@ local function nokker()
        end
 end
 
-
-
+-- Fixed joinLowPopulationServer
 local function joinLowPopulationServer()
     while true do
-task.wait(60)
+        task.wait(15)
         local success, response = pcall(function()
             return HttpService:JSONDecode(
                 game:HttpGet("https://games.roblox.com/v1/games/" .. tostring(game.PlaceId) .. "/servers/Public?sortOrder=Desc&limit=100")
@@ -488,21 +460,18 @@ task.wait(60)
         if success and response and response.data then
             for _, server in ipairs(response.data) do
                 if server.id ~= game.JobId and server.playing <= 35 then
-
-                    local teleportSuccess, teleportError = pcall(function()
+                    local teleportSuccess = pcall(function()
                         TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
                     end)
-
                     if teleportSuccess then
-                        return  -- Exit after successfully joining a server
+                        return
                     end
                 end
             end
-
-        task.wait(3)  -- Retry every 3 seconds if no valid servers are found
+        end
+        task.wait(3)
     end
 end
-
 
 
 -- Main execution
@@ -553,4 +522,3 @@ local function main()
 end 
 
 main()
- 
