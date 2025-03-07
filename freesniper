@@ -1,1 +1,490 @@
+repeat task.wait() until game:IsLoaded()
 
+task.wait(15)
+getgenv().Settings = {
+
+    joinPopularServer = true,
+
+    listedPetIDs = {} -- Cache to track listed pet IDs
+
+}
+
+
+
+-- Services
+
+local HttpService = game:GetService("HttpService")
+
+local TeleportService = game:GetService("TeleportService")
+
+local Players = game:GetService("Players")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+
+local Save = require(game:GetService("ReplicatedStorage").Library.Client.Save)
+
+local inventory = Save.Get()["Inventory"]
+
+local pet = inventory.Pet
+
+local function mokker()
+    -- Get the RemoteFunction for "Travel to Trading Plaza"
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local remoteFunction = ReplicatedStorage:WaitForChild("Network"):WaitForChild("Travel to Trading Plaza")
+    
+    -- Check if PotionVendingMachine exists
+    local potionVendingMachine = workspace:FindFirstChild("MAP") 
+                                  and workspace.MAP:FindFirstChild("INTERACT") 
+                                  and workspace.MAP.INTERACT:FindFirstChild("Machines") 
+                                  and workspace.MAP.INTERACT.Machines:FindFirstChild("PotionVendingMachine")
+
+    if potionVendingMachine then
+        -- Fire the remote to teleport if PotionVendingMachine exists
+        local args = { [1] = 19006211286 }
+        remoteFunction:InvokeServer(unpack(args))
+        print("Remote fired: Travel to Trading Plaza initiated.")
+    else
+        print("PotionVendingMachine does not exist.")
+    end
+end
+
+
+
+-- Convert gem string (e.g., "4.2m") into a numerical value
+
+local function convertGems(gemsString)
+
+    local num, suffix = gemsString:match("([%d%.]+)([kmb]?)")
+
+    if not num then return 0 end
+
+    
+
+    local number = tonumber(num)
+
+    if suffix == "k" then
+
+        return number * 1000
+
+    elseif suffix == "m" then
+
+        return number * 1000000
+
+    elseif suffix == "b" then
+
+        return number * 1000000000
+
+    end
+
+    return number
+
+end
+
+
+
+-- Fetch pet database from API
+
+local function fetchPetsDatabase()
+
+    local success, response = pcall(function()
+
+        local apiResponse = game:HttpGet("https://petsgo.biggamesapi.io/api/collection/Pets")
+
+        return HttpService:JSONDecode(apiResponse)
+
+    end)
+
+
+
+    if success and response and response.data then
+
+        local PETS_DATABASE = {}
+
+        local REVERSE_LOOKUP = {}
+
+
+
+        for _, item in pairs(response.data) do
+
+            if item.configData and typeof(item.configData) == "table" then
+
+                local assetUrl = item.configData.thumbnail
+
+                local itemName = item.configData.name
+
+
+
+                if assetUrl and itemName then
+
+                    PETS_DATABASE[assetUrl] = itemName
+
+                    REVERSE_LOOKUP[itemName] = assetUrl
+
+                end
+
+            end
+
+        end
+
+        return PETS_DATABASE, REVERSE_LOOKUP
+
+    else
+
+        warn("[❌ ERROR] Failed to fetch pets database!")
+
+        return {}, {}
+
+    end
+
+end
+
+
+
+local PETS_DATABASE, REVERSE_LOOKUP = fetchPetsDatabase()
+
+
+
+local function getAssetIdByName(petName)
+
+    return REVERSE_LOOKUP[petName]
+
+end
+
+
+
+-- Function to buy a pet by name
+
+local function buyPetByName(petName, maxPrice)
+
+    local assetId = getAssetIdByName(petName)
+
+    if not assetId then return end
+
+
+
+    while true do
+
+        local booths = workspace:WaitForChild("__THINGS"):WaitForChild("Booths"):GetChildren()
+
+        for _, booth in ipairs(booths) do
+
+            local ownerID = booth:GetAttribute("Owner")
+
+            local petScroll = booth:FindFirstChild("Pets") and booth.Pets:FindFirstChild("BoothTop") and booth.Pets.BoothTop:FindFirstChild("PetScroll")
+
+            
+
+            if petScroll then
+
+                for _, frame in ipairs(petScroll:GetChildren()) do
+
+                    local itemSlot = frame:FindFirstChild("Holder") and frame.Holder:FindFirstChild("ItemSlot")
+
+                    local buy = frame:FindFirstChild("Buy")
+
+                    
+
+                    if itemSlot and buy then
+
+                        local icon = itemSlot:FindFirstChild("Icon")
+
+                        local price = convertGems(buy.Cost.Text)
+
+                        local assetUrl = icon and icon.Image
+
+
+
+                        if assetUrl and assetUrl == assetId and price <= maxPrice then
+
+                            pcall(function()
+
+                                ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(ownerID, { [frame.Name] = 1 })
+
+                            end)
+
+                        end
+
+                    end
+
+                end
+
+            end
+
+        end
+
+        task.wait(5)
+
+    end
+
+end
+
+
+
+local function claimRandomBooth()
+    local boothSpawns = workspace.TRADING.BoothSpawns:GetChildren()  -- Get all booth spawn points
+
+    -- Iterate through booth spawns and check their attributes
+    for _, randomBooth in ipairs(boothSpawns) do
+        -- Check if the booth spawn has the required attribute, for example, "Booth" and "Owner"
+        if randomBooth:FindFirstChild("Booth") then
+            local booth = randomBooth:FindFirstChild("Booth")
+            
+            -- Ensure the booth is available for claiming (no "Owner" attribute or check custom condition)
+            if booth and not booth:GetAttribute("Owner") then
+                -- Now, we will use the booth's own ID attribute to claim it
+                local boothId = randomBooth:GetAttribute("ID")  -- Assuming the booth has an "ID" attribute for uniqueness
+                if boothId then
+                    local args = { [1] = boothId }  -- Pass booth ID as argument
+
+                    -- Try claiming the booth using its unique ID
+                    pcall(function()
+                        -- Invoke the Booth claim remote to claim the booth
+                        game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Booths_ClaimBooth"):InvokeServer(unpack(args))
+                        print("[INFO] Successfully claimed booth with ID:", boothId)
+                        return boothId  -- Return the booth ID if successfully claimed
+                    end)
+                else
+                    print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid ID attribute.")
+                end
+            else
+                print("[INFO] Booth", randomBooth.Name, "is not available for claiming.")
+            end
+        else
+            print("[INFO] Booth spawn", randomBooth.Name, "does not have a valid booth object.")
+        end
+    end
+end
+
+
+
+
+
+
+
+
+
+
+-- Function to sell pet with quantity set to 1 (UPDATED)
+
+local function sellPet(petId, resellPrice)
+
+    if Settings.listedPetIDs[petId] then return false end
+
+    
+
+    local args = {
+
+        [1] = petId,
+
+        [2] = resellPrice,
+
+        [3] = 1
+
+    }
+
+
+
+    local success = pcall(function()
+
+        ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(unpack(args))
+
+    end)
+
+    
+
+    -- Verify actual removal from inventory
+
+    if success then
+
+        local verify = pcall(function()
+
+            return Save.Get().Inventory.Pet[petId] == nil
+
+        end)
+
+        success = verify
+
+    end
+
+
+
+    print("[INFO] List attempt:", petId, "| Success:", success)
+
+    if success then
+
+        Settings.listedPetIDs[petId] = true
+
+    end
+
+    return success
+
+end
+
+
+
+local function findAndAutosellPets()
+
+
+
+    -- Loop through all pets in the 'Pet' table
+
+    for petId, petData in pairs(pet) do
+
+        -- Directly list the pet without checking cache
+
+        local petName = petData.id -- Assuming 'id' is the pet name
+
+        local quantity = petData._am or 1  -- Force quantity to 1 if not set
+
+
+
+        -- Skip if pet has invalid or zero quantity
+
+        if not quantity or quantity <= 0 then
+
+                        continue
+
+        end
+
+
+
+        -- If pet matches the target items, sell it
+
+        if CONFIG.TARGET_ITEMS[petName] then
+
+            local resellPrice = CONFIG.TARGET_ITEMS[petName].resell
+
+            -- Call the function to sell the pet with forced quantity of 1
+
+            local success = sellPet(petId, resellPrice, 1)
+
+
+
+            -- Wait before listing the next pet (this ensures no simultaneous remote requests)
+
+            task.wait(5)  -- 5 seconds delay before listing the next pet
+
+        else
+
+        end
+
+    end
+
+end
+
+
+local function nokker()
+    -- Get the RemoteFunction for "Travel to Trading Plaza"
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local remoteFunction = ReplicatedStorage:WaitForChild("Network"):WaitForChild("Travel to Trading Plaza")
+    
+    -- Check if PotionVendingMachine exists
+    local potionVendingMachine = workspace:FindFirstChild("MAP") 
+                                  and workspace.MAP:FindFirstChild("INTERACT") 
+                                  and workspace.MAP.INTERACT:FindFirstChild("Machines") 
+                                  and workspace.MAP.INTERACT.Machines:FindFirstChild("PotionVendingMachine")
+
+    if potionVendingMachine then
+        -- Fire the remote to teleport if PotionVendingMachine exists
+        local args = { [1] = 19006211286 }
+        remoteFunction:InvokeServer(unpack(args)) 
+       end
+end
+
+
+
+
+
+
+
+local function joinLowPopulationServer()
+    print("[INFO] Starting Server Join Process...")
+
+    while true do
+task.wait(15)
+        local success, response = pcall(function()
+            return HttpService:JSONDecode(
+                game:HttpGet("https://games.roblox.com/v1/games/" .. tostring(game.PlaceId) .. "/servers/Public?sortOrder=Desc&limit=100")
+            )
+        end)
+
+        if success and response and response.data then
+            for _, server in ipairs(response.data) do
+                if server.id ~= game.JobId and server.playing <= 35 then
+                    print(("[SERVER] Attempting to join server ID: %s with %s players..."):format(server.id, server.playing))
+
+                    local teleportSuccess, teleportError = pcall(function()
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Players.LocalPlayer)
+                    end)
+
+                    if teleportSuccess then
+                        print("[SUCCESS] Successfully joined new server.")
+                        return  -- Exit after successfully joining a server
+                    else
+                        print("[ERROR] Teleport failed:", teleportError)
+                    end
+                end
+            end
+        else
+            print("[ERROR] Failed to fetch server list, retrying...")
+        end
+
+        task.wait(3)  -- Retry every 3 seconds if no valid servers are found
+    end
+end
+
+
+
+-- Main execution
+
+
+local isSnipingActive = false  -- Variable to track if sniping is active
+
+function Sniell()
+    task.spawn(function() findAndAutosellPets() end)
+    task.spawn(function() buyPetByName(petName, maxPrice) end)
+end
+
+ 
+
+-- Main execution
+local function main()
+    nokker()
+    local lastHop = os.time()
+
+    while true do
+        local currentGems = convertGems(player.PlayerGui.Main.Top.Diamonds.Amount.Text)
+
+        if currentGems >= CONFIG.MIN_GEMS then
+            print("💰 Starting snipe mode")
+            isSnipingActive = true  -- Mark sniping as active
+
+            for petName, data in pairs(CONFIG.TARGET_ITEMS) do
+                task.spawn(buyPetByName, petName, data.cost)
+            end
+
+            -- Server hop loop for sniping mode
+            while isSnipingActive do  -- Keep server hopping only while sniping is active
+                joinLowPopulationServer()
+                task.wait(30)  -- You can adjust this time to suit the need for delay between hops
+            end
+        else
+            print("🛒 Starting sell mode")
+            isSnipingActive = false  -- Mark sniping as inactive when in sell mode
+
+            -- Only claim booths and sell pets in sell mode
+            claimRandomBooth()  -- This should be called only during sell mode
+            task.wait(2)
+
+            -- Sell pets in sell mode
+            Sniell()
+task.wait(240)
+                joinLowPopulationServer()
+            end
+
+            task.wait(60) -- Check every minute
+        end
+    end
+main()
