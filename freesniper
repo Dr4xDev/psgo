@@ -9,7 +9,7 @@ getgenv().Settings = {
 
 }
 
-getgenv().MIN_GEMS = -1 -- Set minimum gems before sniping
+getgenv().MIN_GEMS = 0 -- Set minimum gems before sniping
 
 
 
