@@ -456,6 +456,8 @@ local function main()
 
     while true do
         local currentGems = convertGems(player.PlayerGui.Main.Top.Diamonds.Amount.Text)
+
+        if currentGems >= CONFIG.MIN_GEMS then
             print("💰 Starting snipe mode")
             isSnipingActive = true  -- Mark sniping as active
 
