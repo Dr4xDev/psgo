@@ -480,5 +480,3 @@ task.wait(240)
         end
     end
 main()
-
-is this right?
